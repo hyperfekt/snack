@@ -216,10 +216,11 @@ with rec
         modspecs = if containingPackage.packageIsExe then [ (executableMainModSpec containingPackage) ] else libraryModSpecs containingPackage;
         deps = allTransitiveDeps modspecs;
         exts = allTransitiveExtensions modspecs;
+        opts = allTransitiveGhcOpts modspecs;
         db = let
           ghc = ghcWith deps;
         in "${ghc}/lib/ghc-${ghc.version}/package.conf.d";
-      in [ "-no-global-package-db" "-package-db ${db}" ] ++ (map (p: "-package ${p}") deps) ++ (map (d: "-i${d}") srcdirs) ++ (map (e: "-X${e}") exts);
+      in [ "-no-global-package-db" "-package-db ${db}" ] ++ (map (p: "-package ${p}") deps) ++ (map (d: "-i${d}") srcdirs) ++ (map (e: "-X${e}") exts) ++ opts;
     in
       writeText "hie-bios-json" (
         builtins.toJSON {
